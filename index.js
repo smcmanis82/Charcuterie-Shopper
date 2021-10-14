@@ -1,8 +1,10 @@
 // This is the Web Server
 const express = require('express');
+const initializeDb = require('./db/init_db').initializeDb;
 const server = express();
 
-require("dotenv").config();
+require('dotenv').config();
+initializeDb();
 
 // create logs for everything
 const morgan = require('morgan');
@@ -17,29 +19,29 @@ const path = require('path');
 server.use(express.static(path.join(__dirname, 'build')));
 
 // here's our API
-const apiRouter = require("./api");
-server.use("/api", apiRouter);
+const apiRouter = require('./api');
+server.use('/api', apiRouter);
 
-const cors = require('cors')
-server.use(cors())
+const cors = require('cors');
+server.use(cors());
 
 // by default serve up the react app if we don't recognize the route
 server.use((req, res, next) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'))
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 // bring in the DB connection
-const { client } = require('./db/client.js')
+const { client } = require('./db/client.js');
 
 // connect to the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, async () => {
-    console.log(`Server is running on ${PORT}!`);
+  console.log(`Server is running on ${PORT}!`);
 
-    try {
-        await client.connect();
-        console.log('Database is open for business!');
-    } catch (error) {
-        console.error("Database is closed for repairs!\n", error);
-    }
+  try {
+    await client.connect();
+    console.log('Database is open for business!');
+  } catch (error) {
+    console.error('Database is closed for repairs!\n', error);
+  }
 });
